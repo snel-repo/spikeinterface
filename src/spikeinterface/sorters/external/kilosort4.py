@@ -18,6 +18,7 @@ class Kilosort4Sorter(BaseSorter):
     gpu_capability = "nvidia-optional"
 
     _default_params = {
+        "remove_chan_delays": True,
         "batch_size": 60000,
         "nblocks": 1,
         "Th_universal": 9,
@@ -60,6 +61,7 @@ class Kilosort4Sorter(BaseSorter):
     }
 
     _params_description = {
+        "remove_chan_delays": "Setting added for EMUsort to optimally remove timing delays across channels by correlation maximization. Default value: True",
         "batch_size": "Number of samples included in each batch of data.",
         "nblocks": "Number of non-overlapping blocks for drift correction (additional nblocks-1 blocks are created in the overlaps). Default value: 1.",
         "Th_universal": "Spike detection threshold for universal templates. Th(1) in previous versions of Kilosort. Default value: 9.",
