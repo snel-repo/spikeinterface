@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Union
+
 from packaging import version
 
 from ..basesorter import BaseSorter
@@ -19,6 +20,7 @@ class Kilosort4Sorter(BaseSorter):
 
     _default_params = {
         "remove_chan_delays": True,
+        "remove_spike_outliers": True,
         "batch_size": 60000,
         "nblocks": 1,
         "Th_universal": 9,
@@ -62,6 +64,7 @@ class Kilosort4Sorter(BaseSorter):
 
     _params_description = {
         "remove_chan_delays": "Setting added for EMUsort to optimally remove timing delays across channels by correlation maximization. Default value: True",
+        "remove_spike_outliers": "Setting added for EMUsort to remove outlier spikes with HDBSCAN during initialization. Default value: True",
         "batch_size": "Number of samples included in each batch of data.",
         "nblocks": "Number of non-overlapping blocks for drift correction (additional nblocks-1 blocks are created in the overlaps). Default value: 1.",
         "Th_universal": "Spike detection threshold for universal templates. Th(1) in previous versions of Kilosort. Default value: 9.",
@@ -145,22 +148,22 @@ class Kilosort4Sorter(BaseSorter):
 
     @classmethod
     def _run_from_folder(cls, sorter_output_folder, params, verbose):
-        from kilosort.run_kilosort import (
-            set_files,
-            initialize_ops,
-            compute_preprocessing,
-            compute_drift_correction,
-            detect_spikes,
-            cluster_spikes,
-            save_sorting,
-            get_run_parameters,
-        )
-        from kilosort.io import load_probe, RecordingExtractorAsArray, BinaryFiltered
-        from kilosort.parameters import DEFAULT_SETTINGS
-
         import time
-        import torch
+
         import numpy as np
+        import torch
+        from kilosort.io import BinaryFiltered, RecordingExtractorAsArray, load_probe
+        from kilosort.parameters import DEFAULT_SETTINGS
+        from kilosort.run_kilosort import (
+            cluster_spikes,
+            compute_drift_correction,
+            compute_preprocessing,
+            detect_spikes,
+            get_run_parameters,
+            initialize_ops,
+            save_sorting,
+            set_files,
+        )
 
         if verbose:
             import logging
